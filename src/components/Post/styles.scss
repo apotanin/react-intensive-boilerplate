@@ -1,0 +1,66 @@
+@import "../../theme/palette";
+
+.Post {
+  & {
+    position: relative;
+    width: 500px;
+    margin-top: 10px;
+    padding: 12px;
+    border: 1px solid darken($paletteColor2, 15%);
+    border-radius: 3px;
+    background-color: $paletteColor2;
+    word-wrap: break-word;
+  }
+  img {
+    width: 40px;
+    height: 40px;
+    margin-right: 15px;
+    transition: border .5s ease;
+    border: 1px solid $paletteColor5;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  a {
+    top: 15px;
+    color: $paletteColor7;
+    font-weight: 700;
+  }
+
+  time {
+
+    top: 35px;
+    color: $paletteColor5;
+    font-size: 12px;
+  }
+
+  a,
+  time {
+    &:hover{
+      text-decoration: underline;
+    }
+    position: absolute;
+    left: 60px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  p {
+    margin-top: 16px;
+    font-size: 14px;
+  }
+
+  .cross {
+    &:hover{
+      background-position: -13px 0;
+    }
+    content: '';
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 10px;
+    height: 10px;
+    background: url('../../theme/assets/cross.png') no-repeat;
+    cursor: pointer;
+  }
+}
+

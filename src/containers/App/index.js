@@ -2,19 +2,30 @@
 import React, { Component } from 'react';
 
 // Instruments
-import Styles from './styles';
-import moment from 'moment';
+import Feed from '../../components/Feed';
+import avatar from '../../theme/assets/react.jpg';
+import { string } from 'prop-types';
+
+const appSettings = {
+    avatar,
+    userName: 'Alex'
+};
 
 export default class App extends Component {
+    static childContextTypes = {
+        avatar:   string.isRequired,
+        userName: string.isRequired
+    };
 
-    timer = setInterval(() => this.forceUpdate(), 1000);
+    getChildContext () {
+        return { ...appSettings };
+    }
+
+    // timer = setInterval(() => this.forceUpdate(), 1000);
 
     render () {
         return (
-            <section className = { Styles.app }>
-                <h1>Welcome!</h1>
-                <p>It is {moment().format('MMMM D h:mm:ss a')}.</p>
-            </section>
+            <Feed />
         );
     }
 }
