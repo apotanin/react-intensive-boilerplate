@@ -1,0 +1,18 @@
+@import "../../theme/palette";
+
+.Tooltip {
+  & {
+    position: absolute;
+    z-index: 1;
+    top: 5px;
+    width: 200px;
+    padding: 6px 8px;
+    list-style: none;
+    border-radius: 2px;
+    background-color: $paletteColor8;
+    color: $paletteColor2;
+    font-size: 12px;
+    line-height: 16px;
+    text-align: left;
+  }
+}
