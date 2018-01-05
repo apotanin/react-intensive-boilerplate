@@ -3,6 +3,8 @@ import Styles from './styles';
 import { string, func } from 'prop-types';
 import { getUniqueID } from '../../helpers';
 import moment from 'moment';
+import { Transition, TransitionGroup } from 'react-transition-group';
+import { fromTo, Power4 } from 'gsap';
 
 
 export default class Compose extends Component {
@@ -24,6 +26,25 @@ export default class Compose extends Component {
         this.handleInputAreaKeys = ::this._handleInputAreaKeys;
         this.handleTextAreaChange= ::this._handleTextAreaChange;
     }
+
+    handleEnter = (e) => {
+        fromTo(
+            e,
+            1.5,
+            {
+                x:         1300,
+                y:         -300,
+                opacity:   0,
+                rotationY: 360
+            },
+            {
+                x:         0,
+                y:         0,
+                opacity:   1,
+                rotationY: 0
+            }
+        );
+    };
 
     _handleTextAreaChange (event) {
         this.setState({ comment: event.target.value });
@@ -54,21 +75,27 @@ export default class Compose extends Component {
         const { comment } = this.state;
 
         return (
-            <section className = { Styles.Compose }>
-                <img src = { avatar } />
-                <form onSubmit = { this.submit }>
-                    <textarea
-                        placeholder = { `What's on your mind, ${userName}?` }
-                        value = { comment }
-                        onChange = { this.handleTextAreaChange }
-                        onKeyPress = { this.handleInputAreaKeys }
-                    />
-                    <input
-                        type = 'submit'
-                        value = 'Post'
-                    />
-                </form>
-            </section>
+            <Transition
+                appear
+                in
+                timeout = { 1000 }
+                onEnter = { this.handleEnter }>
+                <section className = { Styles.Compose }>
+                    <img src = { avatar } />
+                    <form onSubmit = { this.submit }>
+                        <textarea
+                            placeholder = { `What's on your mind, ${userName}?` }
+                            value = { comment }
+                            onChange = { this.handleTextAreaChange }
+                            onKeyPress = { this.handleInputAreaKeys }
+                        />
+                        <input
+                            type = 'submit'
+                            value = 'Post'
+                        />
+                    </form>
+                </section>
+            </Transition>
         );
     }
 }
