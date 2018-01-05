@@ -10,7 +10,8 @@ import { fromTo, Power4 } from 'gsap';
 export default class Compose extends Component {
     static contextTypes = {
         avatar:   string.isRequired,
-        userName: string.isRequired
+        firstName: string.isRequired,
+        lastName:  string.isRequired
     };
 
     static propTypes = {
@@ -71,7 +72,7 @@ export default class Compose extends Component {
     }
 
     render () {
-        const { avatar, userName } = this.context;
+        const { avatar, firstName, lastName } = this.context;
         const { comment } = this.state;
 
         return (
@@ -84,7 +85,7 @@ export default class Compose extends Component {
                     <img src = { avatar } />
                     <form onSubmit = { this.submit }>
                         <textarea
-                            placeholder = { `What's on your mind, ${userName}?` }
+                            placeholder = { `What's on your mind, ${firstName} ${lastName}?` }
                             value = { comment }
                             onChange = { this.handleTextAreaChange }
                             onKeyPress = { this.handleInputAreaKeys }

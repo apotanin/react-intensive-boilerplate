@@ -6,15 +6,25 @@ import Feed from '../../components/Feed';
 import avatar from '../../theme/assets/react.jpg';
 import { string } from 'prop-types';
 
+const GROUP_ID = 'sn8x1osnm1';
+const TOKEN = 'a4z3bzb3iq';
+const URL = `https://lab.lectrum.io/react/api/${GROUP_ID}`;
+
 const appSettings = {
+    url:       URL,
     avatar,
-    userName: 'Alex'
+    firstName: 'Alex',
+    lastName:  'Potanin',
+    token:     TOKEN
 };
 
 export default class App extends Component {
     static childContextTypes = {
-        avatar:   string.isRequired,
-        userName: string.isRequired
+        url:       string.isRequired,
+        avatar:    string.isRequired,
+        firstName: string.isRequired,
+        lastName:  string.isRequired,
+        token:     string.isRequired
     };
 
     getChildContext () {

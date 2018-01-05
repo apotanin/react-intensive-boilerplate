@@ -5,7 +5,8 @@ import Tooltip from '../Tooltip';
 
 export default class Like extends Component {
     static contextTypes = {
-        userName: string.isRequired
+        firstName: string.isRequired,
+        lastName:  string.isRequired
     };
 
     constructor () {
@@ -22,7 +23,7 @@ export default class Like extends Component {
 
     _doLike () {
         const _likers = this.state.likers;
-        const userName = this.context.userName;
+        const userName = `${this.context.firstName} ${this.context.lastName}`;
 
         if (_likers.indexOf(userName)<0) {
             this.setState(({ likers }) => ({

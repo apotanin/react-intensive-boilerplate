@@ -8,7 +8,8 @@ import { fromTo, Power4 } from 'gsap';
 export default class Postman extends Component {
     static contextTypes = {
         avatar:   string.isRequired,
-        userName: string.isRequired
+        firstName: string.isRequired,
+        lastName:  string.isRequired
     };
 
     state = {
@@ -30,7 +31,7 @@ export default class Postman extends Component {
     };
 
     render () {
-        const { avatar, userName } = this.context;
+        const { avatar, firstName, lastName } = this.context;
         const { show } = this.state;
 
         const postman = (<Transition
@@ -40,7 +41,7 @@ export default class Postman extends Component {
             onExit = { this.handleExit }>
             <section className = { Styles.Postman }>
                 <img src = { avatar } />
-                <span>{`Welcome back ${userName}`}</span>
+                <span>{`Welcome back ${firstName} ${lastName}`}</span>
             </section>
         </Transition>);
 
