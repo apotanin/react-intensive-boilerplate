@@ -1,21 +1,20 @@
 import React, { Component } from 'react';
 import Styles from './styles';
 import Like from '../Like';
-import { string, number, func } from 'prop-types';
+import { array, string, number, func } from 'prop-types';
 import moment from 'moment';
 
 export default class Post extends Component {
-    static contextTypes = {
-        avatar:    string.isRequired,
-        firstName: string.isRequired,
-        lastName:  string.isRequired
-    };
 
     static propTypes = {
+        avatar:     string.isRequired,
         comment:    string.isRequired,
         created:    number.isRequired,
         deletePost: func.isRequired,
-        id:         string.isRequired
+        firstName:  string.isRequired,
+        id:         string.isRequired,
+        lastName:   string.isRequired,
+        likes:      array.isRequired
     };
 
     constructor () {
@@ -30,8 +29,7 @@ export default class Post extends Component {
     };
 
     render () {
-        const { avatar, firstName, lastName } = this.context;
-        const { comment, created } = this.props;
+        const { avatar, comment, created, id, firstName, lastName, likes } = this.props;
 
         return (
             <section className = { Styles.Post }>
@@ -40,7 +38,7 @@ export default class Post extends Component {
                 <a>{firstName} {lastName}</a>
                 <time>It is {moment.unix(created).format('MMMM D h:mm:ss a')}.</time>
                 <p>{comment}</p>
-                <Like />
+                <Like likes = { likes } postId = { id } />
             </section>
         );
     }

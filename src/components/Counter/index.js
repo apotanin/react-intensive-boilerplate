@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import Styles from './styles';
 import { number } from 'prop-types';
-import { Transition, TransitionGroup } from 'react-transition-group';
-import { fromTo, Power4 } from 'gsap';
+import { Transition } from 'react-transition-group';
+import { fromTo } from 'gsap';
 
 
 export default class Counter extends Component {

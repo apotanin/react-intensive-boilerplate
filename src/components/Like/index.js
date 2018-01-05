@@ -1,80 +1,92 @@
 import React, { Component } from 'react';
 import Styles from './styles';
-import { string } from 'prop-types';
+import { array, func, string } from 'prop-types';
 import Tooltip from '../Tooltip';
 
 export default class Like extends Component {
     static contextTypes = {
-        firstName: string.isRequired,
-        lastName:  string.isRequired
+        likeHandler: func.isRequired
     };
 
-    constructor () {
-        super();
+    static propTypes = {
+        likes:  array.isRequired,
+        postId: string.isRequired
+    };
+
+    constructor (props) {
+        super(props);
         this.state = {
-            alreadyLiked: false,
-            likers:       [],
-            selectedUser: ''
+            likers:      props.likes,
+            showTooltip: false
         };
         this.doLike = ::this._doLike;
         this.handleLikerMouseEnter = ::this._handleLikerMouseEnter;
         this.handleLikerMouseLeave = ::this._handleLikerMouseLeave;
     }
 
-    _doLike () {
-        const _likers = this.state.likers;
-        const userName = `${this.context.firstName} ${this.context.lastName}`;
+    async _doLike () {
+        const { likeHandler } = this.context;
+        const { postId } = this.props;
+        const likers = await likeHandler(postId);
 
-        if (_likers.indexOf(userName)<0) {
-            this.setState(({ likers }) => ({
-                alreadyLiked: true,
-                likers:       [...likers, userName]
-            })
-            );
-        } else {
-            this.setState(({ likers }) => ({
-                alreadyLiked: false,
-                likers:       likers.filter((element) => element!==userName)
-            })
-            );
-        }
+        console.log(likers.myId);
+        this.setState({
+            likers
+        });
     }
 
     _handleLikerMouseEnter (event) {
         this.setState({
-            selectedUser: event.target.dataset.value
+            showTooltip: true
         });
     }
 
     _handleLikerMouseLeave () {
         this.setState({
-            selectedUser: ''
+            showTooltip: false
         });
     }
 
     render () {
-        const { alreadyLiked, likers, selectedUser } = this.state;
-        const likersList = likers.length
-            ? likers.map((liker) => (
-                <span
-                    data-value = { liker }
-                    key = { liker }
-                    onMouseEnter = { this.handleLikerMouseEnter }
-                    onMouseLeave = { this.handleLikerMouseLeave }>
-                    { selectedUser === liker
-                        ? <Tooltip content = { selectedUser } />
-                        : '' }
-                    {liker}</span>
-            ))
-            : <span>0</span>;
+        const { likers, showTooltip } = this.state;
+
+        let likerRow = '';
+
+        switch (likers.length) {
+            case 0:
+                likerRow = 0;
+                break;
+            case 1:
+                likerRow = likers[0].id === likers.myId ? `You ` :
+                    `${likers[0].firstName} ${likers[0].lastName}`;
+                break;
+            case 2:
+                likerRow = likers.myId
+                    ? likers[0].id === likers.myId
+                        ? `You & ${likers[1].firstName} ${likers[1].lastName}`
+                        : `You & ${likers[0].firstName} ${likers[0].lastName}`
+                    : `${likers[0].firstName} ${likers[0].lastName} & ${likers[1].firstName} ${likers[1].lastName}`;
+                break;
+            default:
+                likerRow = likers.myId
+                    ? `You & ${likers.length - 1} more`
+                    : `${likers.length} more`;
+        }
 
         return (
             <section className = { Styles.Like }>
                 <span
-                    className = { alreadyLiked ? Styles.unLikeIcon : Styles.likeIcon }
+                    className = { likers.myId ? Styles.unLikeIcon : Styles.likeIcon }
                     onClick = { this.doLike }>Like</span>
                 <div>
-                    {likersList}
+                    <span
+                        onMouseEnter = { this.handleLikerMouseEnter }
+                        onMouseLeave = { this.handleLikerMouseLeave }>
+                        {likerRow}
+                        { showTooltip && likers.length
+                            ? <Tooltip content = { likers } />
+                            : '' }
+                    </span>
                 </div>
             </section>
         );

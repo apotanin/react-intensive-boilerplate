@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import Styles from './styles';
-import { string } from 'prop-types';
+import { array } from 'prop-types';
 
 export default class Tooltip extends Component {
     static propTypes = {
-        content: string.isRequired
+        content: array.isRequired
     };
 
     render () {
@@ -12,7 +12,7 @@ export default class Tooltip extends Component {
 
         return (<ul className = { Styles.Tooltip }>
             <li>
-                {content}
+                {[...content].reduce((result, element) => result+=`${element.firstName} ${element.lastName}`,'')}
             </li>
         </ul>);
     }

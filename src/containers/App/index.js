@@ -11,16 +11,16 @@ const TOKEN = 'a4z3bzb3iq';
 const URL = `https://lab.lectrum.io/react/api/${GROUP_ID}`;
 
 const appSettings = {
-    url:       URL,
+    api:       URL,
     avatar,
-    firstName: 'Alex',
+    firstName: 'Aleksandr',
     lastName:  'Potanin',
     token:     TOKEN
 };
 
 export default class App extends Component {
     static childContextTypes = {
-        url:       string.isRequired,
+        api:       string.isRequired,
         avatar:    string.isRequired,
         firstName: string.isRequired,
         lastName:  string.isRequired,

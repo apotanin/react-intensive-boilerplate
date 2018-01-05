@@ -7,7 +7,7 @@ import { fromTo, Power4 } from 'gsap';
 
 export default class Postman extends Component {
     static contextTypes = {
-        avatar:   string.isRequired,
+        avatar:    string.isRequired,
         firstName: string.isRequired,
         lastName:  string.isRequired
     };

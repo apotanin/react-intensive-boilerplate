@@ -8,10 +8,23 @@ import Postman from '../Postman';
 import Counter from '../Counter';
 import { fromTo, Back } from 'gsap';
 import { Transition, TransitionGroup } from 'react-transition-group';
+import { func, string } from 'prop-types';
 
 const portalContainer = document.getElementById('spinner');
 
 export default class Feed extends Component {
+    static contextTypes ={
+        api:       string.isRequired,
+        avatar:    string.isRequired,
+        firstName: string.isRequired,
+        lastName:  string.isRequired,
+        token:     string.isRequired
+    };
+
+    static childContextTypes ={
+        likeHandler: func.isRequired
+    };
+
     constructor () {
         super();
         this.state = {
@@ -22,37 +35,138 @@ export default class Feed extends Component {
             comment: string,
             created: number => moment().unix()
              */
-            ]
+            ],
+            spinnerShow: false
         };
         this.createPost = ::this._createPost;
         this.deletePost=::this._deletePost;
+
+        this.intervel = setInterval(this._fetchPosts, 5000);
+    }
+
+    getChildContext () {
+        return { likeHandler: this._likeHandler };
     }
 
     componentWillMount () {
-        const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+        // const posts = JSON.parse(localStorage.getItem('posts') || '[]');
 
-        this.setState({ posts });
+        // this.setState({ posts });
     }
 
-    componentWillUpdate (_, { posts }) {
-        this.saveToLocalStorage(posts);
+    componentDidMount () {
+        this._fetchPosts();
     }
 
-    saveToLocalStorage = (value) => {
-        localStorage.setItem('posts', JSON.stringify(value));
+    componentWillUnmount () {
+        clearInterval(this.intervel);
+    }
+
+    // componentWillUpdate (_, { posts }) {
+    //     this.saveToLocalStorage(posts);
+    // }
+
+    // saveToLocalStorage = (value) => {
+    //     localStorage.setItem('posts', JSON.stringify(value));
+    // };
+
+    _fetchPosts = async () => {
+        const { api }=this.context;
+
+        this.setState({ spinnerShow: true });
+
+        try {
+            const resp = await fetch(api, {
+                method:  'GET',
+                headers: {}
+            });
+            const { data } = await resp.json();
+            const posts = data || [];
+
+            this.setState({ posts });
+        } catch (e) {
+            console.log(`Posts were not fetched. Error ${e}`);
+        } finally {
+            this.setState({ spinnerShow: false });
+        }
+
     };
 
-    _createPost (post) {
-        this.setState(({ posts }) => (
-            { posts: [post, ...posts]}
-        ));
+    async _createPost (post) {
+        const { api, token }=this.context;
+
+        try {
+            const resp = await fetch(api, {
+                method:  'POST',
+                headers: {
+                    Authorization:  token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(post)
+            });
+
+            if (resp.status === 200) {
+                const { data } = await resp.json();
+                const newPost = data || '[]';
+
+                this.setState(({ posts }) => (
+                    { posts: [newPost, ...posts]}
+                ));
+            }
+        } catch (e) {
+            console.log(`Cannot create post. Error ${e}`);
+        }
     }
 
-    _deletePost (id) {
-        this.setState(({ posts:prevPosts }) => (
-            { posts: prevPosts.filter((post) => post.id !== id) }
-        ));
+    async _deletePost (id) {
+        const { api, token }=this.context;
+
+        try {
+            const resp = await fetch(`${api}/${id}`, {
+                method:  'DELETE',
+                headers: {
+                    Authorization: token
+                }
+            });
+
+            if (resp.status === 204) {
+                this.setState(({ posts:prevPosts }) => (
+                    { posts: prevPosts.filter((post) => post.id !== id) }
+                ));
+            } else {
+                console.log(`Cannot remove post. Error ${resp.status}`);
+            }
+        } catch (e) {
+            console.log(`Cannot remove post. Error ${e}`);
+        }
     }
+
+    _likeHandler = async (postId) => {
+        const { api, token, firstName, lastName }=this.context;
+
+        try {
+            const resp = await fetch(`${api}/${postId}`, {
+                method:  'PUT',
+                headers: {
+                    Authorization: token
+                }
+            });
+
+            if (resp.status === 200) {
+                const { data={}} = await resp.json();
+
+                const myLike = data.likes.find((_) => _.firstName === firstName && _.lastName===lastName);
+
+                data.likes.myId = myLike ? myLike.id : null;
+
+                return data.likes;
+            }
+            console.log(`Cannot like post. Error ${resp.status}`);
+
+        } catch (e) {
+            console.log(`Cannot like post. Error ${e}`);
+        }
+    };
 
     handleEnter = (e) => {
         fromTo(
@@ -89,11 +203,15 @@ export default class Feed extends Component {
         );
     };
 
-
     render () {
-        const { posts } = this.state;
-        const postList = posts.map((post) => (
-            <Transition
+        const { posts, spinnerShow } = this.state;
+        const { firstName, lastName } = this.context;
+        const postList = posts.map((post) => {
+            const myLike = post.likes.find((_) => _.firstName === firstName && _.lastName===lastName);
+
+            post.likes.myId = myLike ? myLike.id : null;
+
+            return (<Transition
                 appear
                 in
                 key = { post.id }
@@ -101,8 +219,8 @@ export default class Feed extends Component {
                 onEnter = { this.handleEnter }
                 onExit = { this.handleExit }>
                 <Post deletePost = { this.deletePost } { ...post } />
-            </Transition>
-        ));
+            </Transition>);
+        });
 
         return (
             <section className = { Styles.Feed }>
@@ -112,7 +230,7 @@ export default class Feed extends Component {
                     {postList}
                 </TransitionGroup>
                 <Postman />
-                {createPortal(<Spinner />, portalContainer)}
+                {spinnerShow && createPortal(<Spinner />, portalContainer)}
             </section>
         );
     }

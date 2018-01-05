@@ -3,13 +3,13 @@ import Styles from './styles';
 import { string, func } from 'prop-types';
 import { getUniqueID } from '../../helpers';
 import moment from 'moment';
-import { Transition, TransitionGroup } from 'react-transition-group';
-import { fromTo, Power4 } from 'gsap';
+import { Transition } from 'react-transition-group';
+import { fromTo } from 'gsap';
 
 
 export default class Compose extends Component {
     static contextTypes = {
-        avatar:   string.isRequired,
+        avatar:    string.isRequired,
         firstName: string.isRequired,
         lastName:  string.isRequired
     };
