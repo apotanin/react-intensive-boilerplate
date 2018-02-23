@@ -12,7 +12,7 @@ export default class Tooltip extends Component {
 
         return (<ul className = { Styles.Tooltip }>
             <li>
-                {[...content].reduce((result, element) => result+=`${element.firstName} ${element.lastName}`,'')}
+                {[...content].reduce((result, element) => result+=`${element.firstName} ${element.lastName} `,'')}
             </li>
         </ul>);
     }
