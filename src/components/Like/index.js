@@ -35,7 +35,7 @@ export default class Like extends Component {
         });
     }
 
-    _handleLikerMouseEnter (event) {
+    _handleLikerMouseEnter () {
         this.setState({
             showTooltip: true
         });

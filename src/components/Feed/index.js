@@ -8,17 +8,14 @@ import Postman from '../Postman';
 import Counter from '../Counter';
 import { fromTo, Back } from 'gsap';
 import { Transition, TransitionGroup } from 'react-transition-group';
-import { func, string } from 'prop-types';
+import { func, object } from 'prop-types';
+import { connect } from 'react-redux';
 
 const portalContainer = document.getElementById('spinner');
 
-export default class Feed extends Component {
-    static contextTypes ={
-        api:       string.isRequired,
-        avatar:    string.isRequired,
-        firstName: string.isRequired,
-        lastName:  string.isRequired,
-        token:     string.isRequired
+class Feed extends Component {
+    static propTypes = {
+        profile: object.isRequired
     };
 
     static childContextTypes ={
@@ -48,12 +45,6 @@ export default class Feed extends Component {
         return { likeHandler: this._likeHandler };
     }
 
-    componentWillMount () {
-        // const posts = JSON.parse(localStorage.getItem('posts') || '[]');
-
-        // this.setState({ posts });
-    }
-
     componentDidMount () {
         this._fetchPosts();
     }
@@ -62,16 +53,8 @@ export default class Feed extends Component {
         clearInterval(this.intervel);
     }
 
-    // componentWillUpdate (_, { posts }) {
-    //     this.saveToLocalStorage(posts);
-    // }
-
-    // saveToLocalStorage = (value) => {
-    //     localStorage.setItem('posts', JSON.stringify(value));
-    // };
-
     _fetchPosts = async () => {
-        const { api }=this.context;
+        const { api }=this.props.profile;
 
         this.setState({ spinnerShow: true });
 
@@ -93,7 +76,7 @@ export default class Feed extends Component {
     };
 
     async _createPost (post) {
-        const { api, token }=this.context;
+        const { api, token }=this.props.profile;
 
         try {
             const resp = await fetch(api, {
@@ -119,7 +102,7 @@ export default class Feed extends Component {
     }
 
     async _deletePost (id) {
-        const { api, token }=this.context;
+        const { api, token }=this.props.profile;
 
         try {
             const resp = await fetch(`${api}/${id}`, {
@@ -142,7 +125,7 @@ export default class Feed extends Component {
     }
 
     _likeHandler = async (postId) => {
-        const { api, token, firstName, lastName }=this.context;
+        const { api, token, firstName, lastName }=this.props.profile;
 
         try {
             const resp = await fetch(`${api}/${postId}`, {
@@ -205,7 +188,8 @@ export default class Feed extends Component {
 
     render () {
         const { posts, spinnerShow } = this.state;
-        const { firstName, lastName } = this.context;
+        const { firstName, lastName } = this.props.profile;
+
         const postList = posts.map((post) => {
             const myLike = post.likes.find((_) => _.firstName === firstName && _.lastName===lastName);
 
@@ -235,3 +219,9 @@ export default class Feed extends Component {
         );
     }
 }
+
+const mapStateToProps = (state) => ({
+    profile: state.profile
+});
+
+export default connect(mapStateToProps)(Feed);
