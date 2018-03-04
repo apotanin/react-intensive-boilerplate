@@ -1,21 +1,18 @@
 import React, { Component } from 'react';
 import Styles from './styles';
-import { string, func } from 'prop-types';
+import { func, object } from 'prop-types';
 import { getUniqueID } from '../../helpers';
 import moment from 'moment';
 import { Transition } from 'react-transition-group';
 import { fromTo } from 'gsap';
+import { connect } from 'react-redux';
 
 
-export default class Compose extends Component {
-    static contextTypes = {
-        avatar:    string.isRequired,
-        firstName: string.isRequired,
-        lastName:  string.isRequired
-    };
+class Compose extends Component {
 
     static propTypes = {
-        createPost: func.isRequired
+        createPost: func.isRequired,
+        profile:    object.isRequired
     };
 
     constructor (props) {
@@ -72,7 +69,7 @@ export default class Compose extends Component {
     }
 
     render () {
-        const { avatar, firstName, lastName } = this.context;
+        const { avatar, firstName, lastName } = this.props.profile;
         const { comment } = this.state;
 
         return (
@@ -100,3 +97,9 @@ export default class Compose extends Component {
         );
     }
 }
+
+const mapStateToProps = (state) => ({
+    profile: state.profile
+});
+
+export default connect(mapStateToProps)(Compose);

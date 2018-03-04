@@ -188,7 +188,7 @@ class Feed extends Component {
 
     render () {
         const { posts, spinnerShow } = this.state;
-        const { firstName, lastName } = this.props.profile;
+        const { avatar, firstName, lastName } = this.props.profile;
 
         const postList = posts.map((post) => {
             const myLike = post.likes.find((_) => _.firstName === firstName && _.lastName===lastName);
@@ -213,7 +213,7 @@ class Feed extends Component {
                 <TransitionGroup>
                     {postList}
                 </TransitionGroup>
-                <Postman />
+                <Postman { ...{ avatar, firstName, lastName } } />
                 {spinnerShow && createPortal(<Spinner />, portalContainer)}
             </section>
         );

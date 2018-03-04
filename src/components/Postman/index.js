@@ -6,7 +6,7 @@ import { fromTo, Power4 } from 'gsap';
 
 
 export default class Postman extends Component {
-    static contextTypes = {
+    static propTypes = {
         avatar:    string.isRequired,
         firstName: string.isRequired,
         lastName:  string.isRequired
@@ -31,7 +31,7 @@ export default class Postman extends Component {
     };
 
     render () {
-        const { avatar, firstName, lastName } = this.context;
+        const { avatar, firstName, lastName } = this.props;
         const { show } = this.state;
 
         const postman = (<Transition
