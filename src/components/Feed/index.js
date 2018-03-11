@@ -8,13 +8,17 @@ import Postman from '../Postman';
 import Counter from '../Counter';
 import { fromTo, Back } from 'gsap';
 import { Transition, TransitionGroup } from 'react-transition-group';
-import { func, object } from 'prop-types';
+import { array, func, object } from 'prop-types';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as postsActions from '../../core/actions/posts';
 
 const portalContainer = document.getElementById('spinner');
 
 class Feed extends Component {
     static propTypes = {
+        actions: object.isRequired,
+        posts:   array.isRequired,
         profile: object.isRequired
     };
 
@@ -35,10 +39,10 @@ class Feed extends Component {
             ],
             spinnerShow: false
         };
-        this.createPost = ::this._createPost;
         this.deletePost=::this._deletePost;
 
-        this.intervel = setInterval(this._fetchPosts, 5000);
+        this.intervel = setInterval(this._fetchPosts, 60000);
+        // this.intervel = setInterval(this._fetchPosts, 5000);
     }
 
     getChildContext () {
@@ -53,76 +57,11 @@ class Feed extends Component {
         clearInterval(this.intervel);
     }
 
-    _fetchPosts = async () => {
-        const { api }=this.props.profile;
+    _fetchPosts = () => this.props.actions.fetchPosts();
 
-        this.setState({ spinnerShow: true });
+    _createPost = (post) => this.props.actions.createPost(post);
 
-        try {
-            const resp = await fetch(api, {
-                method:  'GET',
-                headers: {}
-            });
-            const { data } = await resp.json();
-            const posts = data || [];
-
-            this.setState({ posts });
-        } catch (e) {
-            console.log(`Posts were not fetched. Error ${e}`);
-        } finally {
-            this.setState({ spinnerShow: false });
-        }
-
-    };
-
-    async _createPost (post) {
-        const { api, token }=this.props.profile;
-
-        try {
-            const resp = await fetch(api, {
-                method:  'POST',
-                headers: {
-                    Authorization:  token,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(post)
-            });
-
-            if (resp.status === 200) {
-                const { data } = await resp.json();
-                const newPost = data || '[]';
-
-                this.setState(({ posts }) => (
-                    { posts: [newPost, ...posts]}
-                ));
-            }
-        } catch (e) {
-            console.log(`Cannot create post. Error ${e}`);
-        }
-    }
-
-    async _deletePost (id) {
-        const { api, token }=this.props.profile;
-
-        try {
-            const resp = await fetch(`${api}/${id}`, {
-                method:  'DELETE',
-                headers: {
-                    Authorization: token
-                }
-            });
-
-            if (resp.status === 204) {
-                this.setState(({ posts:prevPosts }) => (
-                    { posts: prevPosts.filter((post) => post.id !== id) }
-                ));
-            } else {
-                console.log(`Cannot remove post. Error ${resp.status}`);
-            }
-        } catch (e) {
-            console.log(`Cannot remove post. Error ${e}`);
-        }
-    }
+    _deletePost = (id) => this.props.actions.deletePost(id);
 
     _likeHandler = async (postId) => {
         const { api, token, firstName, lastName }=this.props.profile;
@@ -187,8 +126,9 @@ class Feed extends Component {
     };
 
     render () {
-        const { posts, spinnerShow } = this.state;
+        const { spinnerShow } = this.state;
         const { avatar, firstName, lastName } = this.props.profile;
+        const { posts } = this.props;
 
         const postList = posts.map((post) => {
             const myLike = post.likes.find((_) => _.firstName === firstName && _.lastName===lastName);
@@ -208,7 +148,7 @@ class Feed extends Component {
 
         return (
             <section className = { Styles.Feed }>
-                <Composer createPost = { this.createPost } />
+                <Composer createPost = { this._createPost } />
                 <Counter counter = { posts.length } />
                 <TransitionGroup>
                     {postList}
@@ -220,8 +160,13 @@ class Feed extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    profile: state.profile
+const mapStateToProps = ({ profile, posts }) => ({
+    profile,
+    posts
 });
 
-export default connect(mapStateToProps)(Feed);
+const mapDispatchToProps = (dispatch) => ({
+    actions: bindActionCreators(postsActions, dispatch)
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Feed);
