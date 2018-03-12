@@ -1,4 +1,5 @@
 import {
+    CREATE_POST, CREATE_POST_SUCCESS, DELETE_POST, DELETE_POST_SUCCESS,
     FETCH_POSTS, FETCH_POSTS_ERROR, FETCH_POSTS_SUCCESS, START_POSTS_FETCHING,
     STOP_POSTS_FETCHING
 } from './types';
@@ -20,6 +21,23 @@ export default Object.freeze({
     }),
     stopPostsFetching: () => ({
         type: STOP_POSTS_FETCHING
+    }),
+
+    createPost: (payload) => ({
+        type: CREATE_POST,
+        payload
+    }),
+    createPostSuccess: ({ data }) => ({
+        type:    CREATE_POST_SUCCESS,
+        payload: data
+    }),
+    deletePost: (payload) => ({
+        type: DELETE_POST,
+        payload
+    }),
+    deletePostSuccess: (id) => ({
+        type:    DELETE_POST_SUCCESS,
+        payload: id
     })
 
 });

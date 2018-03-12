@@ -8,7 +8,7 @@ export function* fetchPostsWorker () {
     try {
         yield put(postsActions.startPostsFetching());
 
-        const { posts: { data: posts }, profile: { api }} = yield select((state) => state);
+        const { posts: { data: posts }, profile: { api }} = yield select();
 
         if (posts.length) {
             throw new Error('posts loaded, no need to refetch');

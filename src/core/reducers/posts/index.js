@@ -4,7 +4,7 @@ import {
     START_POSTS_FETCHING,
     STOP_POSTS_FETCHING,
     FETCH_POSTS_SUCCESS,
-    FETCH_POSTS_ERROR
+    FETCH_POSTS_ERROR, CREATE_POST_SUCCESS, DELETE_POST_SUCCESS
 } from '../../actions/posts/types';
 
 const initialState = {
@@ -33,25 +33,16 @@ export default (state = initialState, { type, payload }) => {
                 isFetching: false
             });
 
+        case CREATE_POST_SUCCESS:
+            return Object.assign({}, state, { data: [payload, ...state.data]});
+
+        case DELETE_POST_SUCCESS: {
+            const posts = state.data.filter((post) => post.id !== payload);
+
+            return Object.assign({}, state, { data: posts });
+        }
+
         default:
             return state;
     }
 };
-
-
-// import { CREATE_POST, DELETE_POST, FETCH_POSTS } from '../../actions/posts/types';
-//
-// const defaultState = [];
-//
-// export default (state = defaultState, { type, payload }) => {
-//     switch (type) {
-//         case CREATE_POST:
-//             return payload;
-//         case FETCH_POSTS:
-//             return payload;
-//         case DELETE_POST:
-//             return payload;
-//         default:
-//             return state;
-//     }
-// };
