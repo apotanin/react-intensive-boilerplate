@@ -41,7 +41,7 @@ class Feed extends Component {
         };
         this.deletePost=::this._deletePost;
 
-        this.intervel = setInterval(this._fetchPosts, 60000);
+        this.intervel = setInterval(this._fetchPosts, 10000);
         // this.intervel = setInterval(this._fetchPosts, 5000);
     }
 
