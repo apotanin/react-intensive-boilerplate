@@ -1,8 +1,11 @@
 import { applyMiddleware, compose, createStore } from 'redux';
+import createSagaMiddleware from 'redux-saga';
 import { createLogger } from 'redux-logger';
 
 import reducer from '../reducers';
-import thunk from 'redux-thunk';
+import { saga } from '../sagas/index';
+
+
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const logger = createLogger({
@@ -18,6 +21,11 @@ const logger = createLogger({
     }
 });
 
-const middleWare = [thunk, logger];
+const sagaMiddleware = createSagaMiddleware();
+const middleware = [sagaMiddleware, logger];
 
-export default createStore(reducer, composeEnhancers(applyMiddleware(...middleWare)));
+const store = createStore(reducer, composeEnhancers(applyMiddleware(...middleware)));
+
+sagaMiddleware.run(saga);
+
+export default store;

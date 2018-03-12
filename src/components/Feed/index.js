@@ -11,7 +11,7 @@ import { Transition, TransitionGroup } from 'react-transition-group';
 import { array, func, object } from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as postsActions from '../../core/actions/posts';
+import postsActions from '../../core/actions/posts';
 
 const portalContainer = document.getElementById('spinner');
 
@@ -41,8 +41,7 @@ class Feed extends Component {
         };
         this.deletePost=::this._deletePost;
 
-        this.intervel = setInterval(this._fetchPosts, 10000);
-        // this.intervel = setInterval(this._fetchPosts, 5000);
+        this.intervel = setInterval(this._fetchPosts, 5000);
     }
 
     getChildContext () {
@@ -160,13 +159,13 @@ class Feed extends Component {
     }
 }
 
-const mapStateToProps = ({ profile, posts }) => ({
+const mapStateToProps = ({ profile, posts: { data }}) => ({
     profile,
-    posts
+    posts: data
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    actions: bindActionCreators(postsActions, dispatch)
+    actions: bindActionCreators({ ...postsActions }, dispatch)
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Feed);
